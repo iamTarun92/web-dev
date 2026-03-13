@@ -1,0 +1,96 @@
+type Mutation {
+  signUp(newUser: SignUpInput): User
+  addPost(post: PostInput): String
+  addWishlist(email: String, productId: String): Wishlist
+  deleteWishlist(id: ID!): Wishlist
+  addOrder(newOrder: OrderInput): Order
+  addAddress(newAddress: AddressInput): Address
+  updateAddress(id: ID!, address: AddressInput): Address
+  deleteAddress(id: ID!): Address
+  addReview(newReview: ReviewInput!): Review
+  updateReview(id: ID!, review: ReviewInput!): Review
+  requestPasswordReset(email: String!): Boolean
+  resetPassword(token: String!, newPassword: String!): Boolean
+}
+
+input ReviewInput {
+  content: String!
+  product: String
+  note: Float!
+}
+
+input OrderInput {
+  email: String
+  orderId: String
+  paymentMethod: String
+  products: [ProductInput]
+  address: AddressWrapperInput
+  name: String
+  transactionId: String
+  amount: Float
+  orderStatus: String
+  paymentStatus: String
+  couponId: String
+}
+
+input OptionInput {
+  value: String
+  price: Float
+  description: String
+}
+
+input AttributeInput {
+  name: String
+  options: [OptionInput]
+}
+
+input selectedAttributeInout {
+  name: String
+  price: Float
+  value: String
+}
+
+input ProductInput {
+  _id: String
+  name: String
+  description: String
+  price: Float
+  specialPrice: Float
+  isFixedPrice: Boolean
+  stock: Int
+  image: String
+  attributes: [AttributeInput]
+  quantity: Int
+  selectedAttributes: [selectedAttributeInout]
+}
+
+input AddressDetailInput {
+  street: String
+  city: String
+  state: String
+  zip: String
+}
+
+input AddressInput {
+  email: String
+  fullName: String
+  phone: String
+  type: String
+  address: AddressDetailInput
+}
+
+input AddressWrapperInput {
+  billing: AddressInput
+  delivery: AddressInput
+}
+
+input SignUpInput {
+  username: String
+  email: String
+  password: String
+}
+
+input PostInput {
+  title: String!
+  content: String!
+}

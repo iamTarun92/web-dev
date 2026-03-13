@@ -1,0 +1,43 @@
+@charset "UTF-8";
+.rate {
+  float: left;
+  padding: 0 10px 0 0;
+}
+.rate:not(:checked) > input {
+  position: absolute;
+  top: -9999px;
+}
+.rate:not(:checked) > label {
+  float: right;
+  width: 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 21px;
+  color: #ccc;
+  margin-bottom: 0;
+  line-height: 21px;
+}
+.rate:not(:checked) > label:before {
+  content: "★";
+}
+.rate:not(.disable-hover) > label:hover {
+  color: #deb217;
+}
+.rate:not(.disable-hover) > label:hover ~ label {
+  color: #deb217;
+}
+.rate:not(.disable-hover) > input:checked + label:hover,
+.rate:not(.disable-hover) > input:checked ~ label:hover {
+  color: #c59b08;
+}
+.rate:not(.disable-hover) > input:checked + label:hover ~ label,
+.rate:not(.disable-hover) > input:checked ~ label:hover ~ label {
+  color: #c59b08;
+}
+.rate:not(.disable-hover) > label:hover ~ input:checked ~ label {
+  color: #c59b08;
+}
+.rate > input:checked ~ label {
+  color: #ffc700;
+}/*# sourceMappingURL=star-rating.component.css.map */
