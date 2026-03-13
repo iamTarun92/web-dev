@@ -7,6 +7,7 @@
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
+  "videoLink": "https://www.youtube.com/playlist?list=PLinedj3B30sDby4Al-i13hQJGQoRQDfPo"
   "author": "",
   "engines": {
     "node": ">=16.0.0"
