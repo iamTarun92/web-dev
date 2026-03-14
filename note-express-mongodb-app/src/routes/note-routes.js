@@ -6,14 +6,11 @@ const {
   updateNote,
 } = require('../controllers/noteController')
 const auth = require('../middlewares/auth')
+
 const noteRouter = express.Router()
 
-noteRouter.get('/', auth, getNotes)
+noteRouter.route('/').get(getNotes).post(createNote)
 
-noteRouter.post('/', auth, createNote)
-
-noteRouter.delete('/:id', auth, deleteNote)
-
-noteRouter.put('/:id', auth, updateNote)
+noteRouter.route('/:id').put(updateNote).delete(deleteNote)
 
 module.exports = noteRouter

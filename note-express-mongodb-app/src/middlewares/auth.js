@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const SECRET_KEY = process.env.SECRET_KEY || 'NOTESAPI' // In production, use an environment variable for the secret key
+const SECRET_KEY = process.env.SECRET_KEY || '12345!@#$%'
 
 const auth = (req, res, next) => {
   try {

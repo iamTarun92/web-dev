@@ -1,6 +1,5 @@
 const noteModel = require('../models/note')
 
-// Create a new note
 const createNote = async (req, res) => {
   const { title, description } = req.body
   const newNote = new noteModel({
@@ -18,7 +17,6 @@ const createNote = async (req, res) => {
   }
 }
 
-// Update note by id
 const updateNote = async (req, res) => {
   const id = req.params.id
   const { title, description } = req.body
@@ -39,7 +37,6 @@ const updateNote = async (req, res) => {
   }
 }
 
-// Delete note by id
 const deleteNote = async (req, res) => {
   const id = req.params.id
   try {
@@ -52,7 +49,6 @@ const deleteNote = async (req, res) => {
   }
 }
 
-// Get all notes for a user
 const getNotes = async (req, res) => {
   try {
     const notes = await noteModel.find({ userId: req.userId })

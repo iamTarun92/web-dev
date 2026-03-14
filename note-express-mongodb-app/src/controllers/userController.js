@@ -1,9 +1,8 @@
 const userModel = require('../models/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const SECRET_KEY = process.env.SECRET_KEY || 'NOTESAPI' // In production, use an environment variable for the secret key
+const SECRET_KEY = process.env.SECRET_KEY || '12345!@#$%'
 
-// User registration (signup) function
 const signup = async (req, res) => {
   const { email, password, username } = req.body
   try {
@@ -27,7 +26,6 @@ const signup = async (req, res) => {
   }
 }
 
-// User login (signin) function
 const signin = async (req, res) => {
   const { email, password } = req.body
   try {

@@ -5,34 +5,23 @@ const cors = require('cors')
 
 const userRouter = require('./routes/user-routes')
 const noteRouter = require('./routes/note-routes')
+const auth = require('./middlewares/auth')
 
 const app = express()
-const port = process.env.PORT || 3000
-const MONGODB_URL =
-  process.env.MONGODB_URL ||
-  'mongodb+srv://pandeyt152_db_user:ffJ86rHAnJUZpbqq@cluster0.0ycfjju.mongodb.net/notes_db?retryWrites=true&w=majority'
+const PORT = process.env.PORT || 3000
+const MONGO_URL =
+  process.env.MONGODB_URL || 'mongodb://localhost:27017/notes-db'
 
-app.use(cors()) // Enable CORS for all routes (you can configure it further if needed)
+app.use(cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
-// Routes
 app.use('/api/users', userRouter)
-app.use('/api/notes', noteRouter)
+app.use('/api/notes', auth, noteRouter) // auth applied here
 
-// Default route
-app.get('/', (req, res) => {
-  res.status(200).send('Welcome to the Note API!')
-})
+app.get('/', (req, res) => res.send('Welcome to the Note API!'))
 
-// Connect to MongoDB and start the server
 mongoose
-  .connect(MONGODB_URL)
-  .then(() => {
-    console.log('Connected to MongoDB')
-    app.listen(port, () => {
-      console.log(`Server started on port ${port}`)
-    })
-  })
-  .catch((err) => {
-    console.error('Error connecting to MongoDB:', err)
-  })
+  .connect(MONGO_URL)
+  .then(() => app.listen(PORT, () => console.log(`Server running on ${PORT}`)))
+  .catch((err) => console.error('MongoDB error:', err))
