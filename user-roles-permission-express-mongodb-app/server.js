@@ -3,6 +3,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const { configureMiddlewares } = require('./middleware')
 const authRoute = require('./routes/authRoute')
+const adminRoute = require('./routes/adminRoute')
 
 // App Initialization
 const app = express()
@@ -12,7 +13,8 @@ const port = process.env.SERVER_PORT | 3000
 configureMiddlewares(app)
 
 // Restful API routes
-app.use('/auth/api', authRoute)
+app.use('/api/auth', authRoute)
+app.use('/api/admin', adminRoute)
 
 mongoose
   .connect('mongodb://127.0.0.1:27017/user-roles-permission')
