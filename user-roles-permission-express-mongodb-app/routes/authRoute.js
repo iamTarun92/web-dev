@@ -3,7 +3,8 @@ const {
   handleUserSignup,
   handelLoginUser,
 } = require('../controllers/authController')
-const { registerValidator, loginValidator } = require('../helpers/validation')
+const { registerValidator, loginValidator } = require('../helpers/validator')
+
 const router = express.Router()
 
 router.post('/signup', registerValidator, handleUserSignup)
