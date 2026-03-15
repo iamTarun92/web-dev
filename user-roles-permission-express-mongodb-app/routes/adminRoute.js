@@ -1,6 +1,8 @@
 const express = require('express')
 const { addPermissionValidator } = require('../helpers/adminValidator')
-const { handleAddPermission } = require('../controllers/adminController')
+const {
+  handleAddPermission,
+} = require('../controllers/admin/permissionController')
 
 const router = express.Router()
 
