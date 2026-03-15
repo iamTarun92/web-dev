@@ -1,11 +1,16 @@
 require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
+const { configureMiddlewares } = require('./middleware')
 
+// App Initialization
 const app = express()
 const port = process.env.SERVER_PORT | 3000
 
-app.use(express.static('public'))
+// Call middleware function
+configureMiddlewares(app)
+
+// Restful API routes
 
 mongoose
   .connect('mongodb://127.0.0.1:27017/user-roles-permission')
