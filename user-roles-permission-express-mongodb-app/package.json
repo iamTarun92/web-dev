@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server"
+    "start": "node server",
+    "dev": "nodemon server"
   },
+  "videoLink": "https://www.youtube.com/playlist?list=PLQDioScEMUhl3n7ibx-sl-Y_d__dFrTSr",
   "keywords": [],
   "author": "",
   "license": "ISC",
