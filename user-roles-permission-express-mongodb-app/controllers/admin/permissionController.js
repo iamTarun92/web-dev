@@ -37,7 +37,7 @@ const handleAddPermission = async (req, res) => {
         return res.status(201).json({
           success: true,
           msg: 'Permission added Successfully!',
-          newPermission,
+          data: newPermission,
         })
       })
       .catch((err) =>
