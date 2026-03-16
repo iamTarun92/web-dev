@@ -100,9 +100,26 @@ const handelLoginUser = async (req, res) => {
   }
 }
 
+const handelGetProfile = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id })
+    return res.status(200).json({
+      success: true,
+      msg: 'Profile data loaded!',
+      user,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      msg: error.message,
+    })
+  }
+}
+
 module.exports = {
   handleUserSignup,
   handelGenerateAccessToken,
   handelGenerateRefreshToken,
   handelLoginUser,
+  handelGetProfile,
 }
