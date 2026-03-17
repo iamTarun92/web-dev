@@ -1,7 +1,21 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const Permission = require('../../models/permissionModel')
+
+const handleGetPermissions = async (req, res) => {
+  try {
+    const permissionsData = await Permission.find({})
+    return res.status(200).json({
+      success: true,
+      msg: 'Permissions fetched successfully!',
+      data: permissionsData,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
 
 const handleAddPermission = async (req, res) => {
   try {
@@ -17,32 +31,122 @@ const handleAddPermission = async (req, res) => {
 
     const { permission_name } = req.body
 
-    const isExists = await Permission.findOne({ permission_name })
+    const isExistPermission = await Permission.findOne({ permission_name })
 
-    if (isExists) {
+    if (isExistPermission) {
       return res.status(400).json({
         success: false,
         msg: 'Permission name already Exist!',
       })
     }
 
-    const newPermission = new Permission({
+    const payload = {
       permission_name,
-      is_default: req.body.is_default ? req.body.is_default : 0,
+    }
+
+    if (req.body.is_default) {
+      payload.is_default = parseInt(req.body.is_default)
+    }
+
+    const newPermission = new Permission(payload)
+
+    const permissionData = await newPermission.save()
+
+    return res.status(201).json({
+      success: true,
+      msg: 'Permission added Successfully!',
+      data: permissionData,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
+
+const handleUpdatePermission = async (req, res) => {
+  try {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        msg: 'Errors',
+        errors: errors.array(),
+      })
+    }
+
+    const { id: _id, permission_name } = req.body
+
+    const isExistPermission = await Permission.findOne({ _id })
+
+    if (!isExistPermission) {
+      return res.status(400).json({
+        success: false,
+        msg: 'Permission not Exist!',
+      })
+    }
+    const isNameAssigned = await Permission.findOne({
+      _id: { $ne: _id },
+      permission_name,
     })
 
-    await newPermission
-      .save()
-      .then(() => {
-        return res.status(201).json({
-          success: true,
-          msg: 'Permission added Successfully!',
-          data: newPermission,
-        })
+    if (isNameAssigned) {
+      return res.status(400).json({
+        success: false,
+        msg: 'Permission name already assigned to another permission!',
       })
-      .catch((err) =>
-        res.status(400).json({ error: 'Unable to add this Permission!' }),
-      )
+    }
+
+    const payload = {
+      permission_name,
+    }
+
+    if (req.body.is_default !== null) {
+      payload.is_default = parseInt(req.body.is_default)
+    }
+
+    const permissionData = await Permission.findByIdAndUpdate(
+      { _id },
+      { $set: payload },
+      { new: true },
+    )
+
+    return res.status(201).json({
+      success: true,
+      msg: 'Permission updated Successfully!',
+      data: permissionData,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
+
+const handleDeletePermission = async (req, res) => {
+  try {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        msg: 'Errors',
+        errors: errors.array(),
+      })
+    }
+
+    const { id } = req.body
+
+    const userData = await Permission.findByIdAndDelete({ _id: id })
+
+    return res.status(200).json({
+      success: true,
+      msg: 'Permission Deleted Successfully!',
+      data: userData,
+    })
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -52,5 +156,8 @@ const handleAddPermission = async (req, res) => {
 }
 
 module.exports = {
+  handleGetPermissions,
   handleAddPermission,
+  handleUpdatePermission,
+  handleDeletePermission,
 }
