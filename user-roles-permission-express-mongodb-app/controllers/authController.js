@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const User = require('../models/userModel')
 
-const handleUserSignup = async (req, res) => {
+const handleUserRegister = async (req, res) => {
   try {
     const errors = validationResult(req)
 
@@ -17,9 +17,9 @@ const handleUserSignup = async (req, res) => {
 
     const { name, email, password } = req.body
 
-    const isExists = await User.findOne({ email })
+    const isExistUser = await User.findOne({ email })
 
-    if (isExists) {
+    if (isExistUser) {
       return res.status(400).json({
         success: false,
         msg: 'Email already Exists!',
@@ -28,13 +28,13 @@ const handleUserSignup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const user = new User({
+    const newUser = new User({
       name,
       email,
       password: hashedPassword,
     })
 
-    const userData = await user.save()
+    const userData = await newUser.save()
 
     return res
       .status(201)
@@ -61,7 +61,7 @@ const handelGenerateRefreshToken = async (user) => {
   return token
 }
 
-const handelLoginUser = async (req, res) => {
+const handelUserLogin = async (req, res) => {
   try {
     const errors = validationResult(req)
 
@@ -74,12 +74,20 @@ const handelLoginUser = async (req, res) => {
     }
 
     const { email, password } = req.body
+
     const userData = await User.findOne({ email: email })
+
+    if (!userData) {
+      return res
+        .status(400)
+        .json({ success: false, msg: 'Email and Password is Incorrect!' })
+    }
+
     const passwordMatch = await bcrypt.compare(password, userData.password)
 
-    if (!userData || !passwordMatch) {
+    if (!passwordMatch) {
       return res
-        .status(401)
+        .status(400)
         .json({ success: false, msg: 'Email and Password is Incorrect!' })
     }
 
@@ -104,11 +112,12 @@ const handelLoginUser = async (req, res) => {
 
 const handelGetProfile = async (req, res) => {
   try {
-    const user = await User.findOne({ _id: req.user._id })
+    const _id = req.user._id
+    const userdata = await User.findOne({ _id })
     return res.status(200).json({
       success: true,
       msg: 'Profile data loaded!',
-      data: user,
+      data: userdata,
     })
   } catch (error) {
     return res.status(400).json({
@@ -119,9 +128,9 @@ const handelGetProfile = async (req, res) => {
 }
 
 module.exports = {
-  handleUserSignup,
+  handleUserRegister,
   handelGenerateAccessToken,
   handelGenerateRefreshToken,
-  handelLoginUser,
+  handelUserLogin,
   handelGetProfile,
 }

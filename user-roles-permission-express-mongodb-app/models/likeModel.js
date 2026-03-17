@@ -1,20 +1,17 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var likeSchema = new mongoose.Schema(
-  {
-    user_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'User',
-    },
-    post_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'Post',
-    },
+const likeSchema = new mongoose.Schema({
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'User',
   },
-  { timestamps: true },
-)
+  post_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Post',
+  },
+})
 
 const Like = mongoose.model('Like', likeSchema)
 
