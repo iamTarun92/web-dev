@@ -3,6 +3,7 @@ const {
   addPermissionValidator,
   updatePermissionValidator,
   deletePermissionValidator,
+  addRoleValidator,
 } = require('../helpers/adminValidator')
 const {
   handleGetPermissions,
@@ -11,9 +12,14 @@ const {
   handleDeletePermission,
 } = require('../controllers/admin/permissionController')
 const { verifyToken, isAdmin } = require('../middleware/authMiddleware')
+const {
+  handleGetRoles,
+  handleAddRoles,
+} = require('../controllers/admin/roleController')
 
 const router = express.Router()
 
+/* permissions routes start */
 router.get('/permissions', verifyToken, isAdmin, handleGetPermissions)
 router.post(
   '/permissions',
@@ -23,18 +29,25 @@ router.post(
   handleAddPermission,
 )
 router.post(
-  '/permissions/update',
+  '/update-permissions',
   verifyToken,
   isAdmin,
   updatePermissionValidator,
   handleUpdatePermission,
 )
 router.post(
-  '/permissions/delete',
+  '/delete-permissions',
   verifyToken,
   isAdmin,
   deletePermissionValidator,
   handleDeletePermission,
 )
+/* permissions routes end */
+
+/* roles routes start */
+router.get('/roles', handleGetRoles)
+router.post('/roles', handleAddRoles)
+
+/* roles routes end */
 
 module.exports = router

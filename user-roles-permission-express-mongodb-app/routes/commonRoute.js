@@ -41,10 +41,10 @@ router.post(
 /* Category routes end */
 
 /* Post route start */
-router.post('/post', verifyToken, addPostValidator, handleAddPost)
-router.get('/post', verifyToken, handleGetPost)
-router.post('/update-post', verifyToken, updatePostValidator, handleUpdatePost)
-router.post('/delete-post', verifyToken, deletePostValidator, handleDeletePost)
+router.post('/posts', verifyToken, addPostValidator, handleAddPost)
+router.get('/posts', verifyToken, handleGetPost)
+router.post('/update-posts', verifyToken, updatePostValidator, handleUpdatePost)
+router.post('/delete-posts', verifyToken, deletePostValidator, handleDeletePost)
 /* Post route end */
 
 module.exports = router
