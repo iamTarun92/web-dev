@@ -10,7 +10,7 @@ const handleUserRegister = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        msg: 'Errors',
+        message: 'Errors',
         errors: errors.array(),
       })
     }
@@ -20,9 +20,9 @@ const handleUserRegister = async (req, res) => {
     const isExistUser = await User.findOne({ email })
 
     if (isExistUser) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
-        msg: 'Email already Exists!',
+        message: 'Email already Exists!',
       })
     }
 
@@ -38,11 +38,15 @@ const handleUserRegister = async (req, res) => {
 
     return res
       .status(201)
-      .json({ success: true, msg: 'Registered Successfully!', data: userData })
+      .json({
+        success: true,
+        message: 'Registered Successfully!',
+        data: userData,
+      })
   } catch (error) {
     return res.status(400).json({
       success: false,
-      msg: error.message,
+      message: error.message,
     })
   }
 }
@@ -68,7 +72,7 @@ const handelUserLogin = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        msg: 'Errors',
+        message: 'Errors',
         errors: errors.array(),
       })
     }
@@ -80,7 +84,7 @@ const handelUserLogin = async (req, res) => {
     if (!userData) {
       return res
         .status(400)
-        .json({ success: false, msg: 'Email and Password is Incorrect!' })
+        .json({ success: false, message: 'Email and Password is Incorrect!' })
     }
 
     const passwordMatch = await bcrypt.compare(password, userData.password)
@@ -88,7 +92,7 @@ const handelUserLogin = async (req, res) => {
     if (!passwordMatch) {
       return res
         .status(400)
-        .json({ success: false, msg: 'Email and Password is Incorrect!' })
+        .json({ success: false, message: 'Email and Password is Incorrect!' })
     }
 
     const accessToken = await handelGenerateAccessToken({ user: userData })
@@ -96,7 +100,7 @@ const handelUserLogin = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      msg: 'Login Successfully!',
+      message: 'Login Successfully!',
       data: userData,
       accessToken: accessToken,
       refreshToken: refreshToken,
@@ -105,7 +109,7 @@ const handelUserLogin = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       success: false,
-      msg: error.message,
+      message: error.message,
     })
   }
 }
@@ -116,13 +120,13 @@ const handelGetProfile = async (req, res) => {
     const userdata = await User.findOne({ _id })
     return res.status(200).json({
       success: true,
-      msg: 'Profile data loaded!',
+      message: 'Profile data loaded!',
       data: userdata,
     })
   } catch (error) {
     return res.status(400).json({
       success: false,
-      msg: error.message,
+      message: error.message,
     })
   }
 }

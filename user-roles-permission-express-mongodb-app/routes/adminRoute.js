@@ -16,19 +16,19 @@ const router = express.Router()
 
 router.get('/permissions', verifyToken, handleGetPermissions)
 router.post(
-  '/permission',
+  '/permissions',
   verifyToken,
   addPermissionValidator,
   handleAddPermission,
 )
 router.post(
-  '/permission/update',
+  '/permissions/update',
   verifyToken,
   updatePermissionValidator,
   handleUpdatePermission,
 )
 router.post(
-  '/permission/delete',
+  '/permissions/delete',
   verifyToken,
   deletePermissionValidator,
   handleDeletePermission,

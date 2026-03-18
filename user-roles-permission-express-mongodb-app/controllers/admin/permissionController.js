@@ -6,7 +6,7 @@ const handleGetPermissions = async (req, res) => {
     const permissionsData = await Permission.find({})
     return res.status(200).json({
       success: true,
-      msg: 'Permissions fetched successfully!',
+      message: 'Permissions fetched successfully!',
       data: permissionsData,
     })
   } catch (error) {
@@ -24,7 +24,7 @@ const handleAddPermission = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        msg: 'Errors',
+        message: 'Errors',
         errors: errors.array(),
       })
     }
@@ -34,9 +34,9 @@ const handleAddPermission = async (req, res) => {
     const isExistPermission = await Permission.findOne({ permission_name })
 
     if (isExistPermission) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
-        msg: 'Permission name already Exist!',
+        message: 'Permission name already Exist!',
       })
     }
 
@@ -54,7 +54,7 @@ const handleAddPermission = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      msg: 'Permission added Successfully!',
+      message: 'Permission added Successfully!',
       data: permissionData,
     })
   } catch (error) {
@@ -72,7 +72,7 @@ const handleUpdatePermission = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        msg: 'Errors',
+        message: 'Errors',
         errors: errors.array(),
       })
     }
@@ -84,7 +84,7 @@ const handleUpdatePermission = async (req, res) => {
     if (!isExistPermission) {
       return res.status(400).json({
         success: false,
-        msg: 'Permission not Exist!',
+        message: 'Permission not Exist!',
       })
     }
     const isNameAssigned = await Permission.findOne({
@@ -93,9 +93,9 @@ const handleUpdatePermission = async (req, res) => {
     })
 
     if (isNameAssigned) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
-        msg: 'Permission name already assigned to another permission!',
+        message: 'Permission name already assigned to another permission!',
       })
     }
 
@@ -115,7 +115,7 @@ const handleUpdatePermission = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      msg: 'Permission updated Successfully!',
+      message: 'Permission updated Successfully!',
       data: permissionData,
     })
   } catch (error) {
@@ -133,7 +133,7 @@ const handleDeletePermission = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        msg: 'Errors',
+        message: 'Errors',
         errors: errors.array(),
       })
     }
@@ -144,7 +144,7 @@ const handleDeletePermission = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      msg: 'Permission Deleted Successfully!',
+      message: 'Permission Deleted Successfully!',
       data: userData,
     })
   } catch (error) {

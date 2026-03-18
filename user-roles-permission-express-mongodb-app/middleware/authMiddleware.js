@@ -7,7 +7,7 @@ const verifyToken = async (req, res, next) => {
   if (!token) {
     return res.status(403).json({
       success: false,
-      msg: 'A token is required for authentication',
+      message: 'A token is required for authentication',
     })
   }
 
@@ -21,7 +21,7 @@ const verifyToken = async (req, res, next) => {
   } catch (error) {
     return res.status(400).json({
       success: false,
-      msg: 'Invalid Token',
+      message: 'Invalid Token',
     })
   }
   next()
