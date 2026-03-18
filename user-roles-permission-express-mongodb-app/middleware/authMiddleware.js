@@ -1,30 +1,61 @@
 const jwt = require('jsonwebtoken')
 
-const verifyToken = async (req, res, next) => {
-  const token =
-    req.body?.token || req.query?.token || req.headers['authorization']
-
-  if (!token) {
-    return res.status(403).json({
-      success: false,
-      message: 'A token is required for authentication',
-    })
-  }
-
+const verifyToken = (req, res, next) => {
   try {
-    let BearerToken = token.split(' ')[1]
-    const decodedToken = jwt.verify(
-      BearerToken,
-      process.env.ACCESS_TOKEN_SECRET,
-    )
-    req.user = decodedToken.user
+    const authHeader = req.headers.authorization
+
+    // Check if header exists
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authorization token missing or malformed',
+      })
+    }
+
+    // Extract token
+    const token = authHeader.split(' ')[1]
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+
+    // Attach user to request
+    req.user = decoded.user
+
+    next()
   } catch (error) {
-    return res.status(400).json({
+    return res.status(401).json({
       success: false,
-      message: 'Invalid Token',
+      message: 'Invalid or expired token',
     })
   }
-  next()
 }
 
-module.exports = { verifyToken }
+const isAdmin = (req, res, next) => {
+  try {
+    // Check if user exists (set by auth middleware)
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized: No user found',
+      })
+    }
+
+    // Check admin role
+    if (req.user.role !== 1) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: You don't have permission to access this route",
+      })
+    }
+
+    // If everything is fine
+    next()
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid token',
+    })
+  }
+}
+
+module.exports = { verifyToken, isAdmin }

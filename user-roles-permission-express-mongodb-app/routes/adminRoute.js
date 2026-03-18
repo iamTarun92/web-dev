@@ -10,26 +10,29 @@ const {
   handleUpdatePermission,
   handleDeletePermission,
 } = require('../controllers/admin/permissionController')
-const { verifyToken } = require('../middleware/authMiddleware')
+const { verifyToken, isAdmin } = require('../middleware/authMiddleware')
 
 const router = express.Router()
 
-router.get('/permissions', verifyToken, handleGetPermissions)
+router.get('/permissions', verifyToken, isAdmin, handleGetPermissions)
 router.post(
   '/permissions',
   verifyToken,
+  isAdmin,
   addPermissionValidator,
   handleAddPermission,
 )
 router.post(
   '/permissions/update',
   verifyToken,
+  isAdmin,
   updatePermissionValidator,
   handleUpdatePermission,
 )
 router.post(
   '/permissions/delete',
   verifyToken,
+  isAdmin,
   deletePermissionValidator,
   handleDeletePermission,
 )
