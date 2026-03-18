@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const { configureMiddlewares } = require('./middleware')
 const authRoute = require('./routes/authRoute')
 const adminRoute = require('./routes/adminRoute')
+const commonRoute = require('./routes/commonRoute')
 
 // App Initialization
 const app = express()
@@ -13,6 +14,7 @@ const port = process.env.SERVER_PORT | 3000
 configureMiddlewares(app)
 
 // Restful API routes
+app.use('/api', commonRoute)
 app.use('/api/auth', authRoute)
 app.use('/api/admin', adminRoute)
 
