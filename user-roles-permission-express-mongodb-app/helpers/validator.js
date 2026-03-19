@@ -27,9 +27,12 @@ const updateUserValidator = [
   check('name', 'name is required.').not().isEmpty(),
 ]
 
+const deleteUserValidator = [check('id', 'id is required.').not().isEmpty()]
+
 module.exports = {
   registerValidator,
   loginValidator,
   addUserValidator,
   updateUserValidator,
+  deleteUserValidator,
 }

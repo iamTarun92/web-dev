@@ -23,11 +23,13 @@ const {
 const {
   addUserValidator,
   updateUserValidator,
+  deleteUserValidator,
 } = require('../helpers/validator')
 const {
   handleGetUsers,
   handleAddUser,
   handleUpdateUser,
+  handleDeleteUser,
 } = require('../controllers/userController')
 
 const router = express.Router()
@@ -60,6 +62,7 @@ router.post('/delete-posts', verifyToken, deletePostValidator, handleDeletePost)
 router.get('/users', verifyToken, handleGetUsers)
 router.post('/users', verifyToken, addUserValidator, handleAddUser)
 router.post('/update-users', verifyToken, updateUserValidator, handleUpdateUser)
+router.post('/delete-users', verifyToken, deleteUserValidator, handleDeleteUser)
 /* user routes end */
 
 module.exports = router

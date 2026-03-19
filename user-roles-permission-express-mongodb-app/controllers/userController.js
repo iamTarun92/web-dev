@@ -81,6 +81,7 @@ const handleGetUsers = async (req, res) => {
     })
   }
 }
+
 const handleUpdateUser = async (req, res) => {
   try {
     const errors = validationResult(req)
@@ -129,8 +130,47 @@ const handleUpdateUser = async (req, res) => {
   }
 }
 
+const handleDeleteUser = async (req, res) => {
+  try {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation errors',
+        errors: errors.array(),
+      })
+    }
+
+    const { id } = req.body
+
+    const isExists = await User.findOne({ _id: id })
+
+    if (!isExists) {
+      return res.status(400).json({
+        success: false,
+        message: 'User not Exist!',
+      })
+    }
+
+    const userData = await User.findByIdAndDelete({ _id: id })
+
+    return res.status(200).json({
+      success: true,
+      message: 'Category deleted Successfully!',
+      data: userData,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
+
 module.exports = {
   handleAddUser,
   handleGetUsers,
   handleUpdateUser,
+  handleDeleteUser,
 }
