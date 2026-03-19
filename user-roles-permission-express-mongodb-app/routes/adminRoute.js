@@ -45,8 +45,8 @@ router.post(
 /* permissions routes end */
 
 /* roles routes start */
-router.get('/roles', handleGetRoles)
-router.post('/roles', handleAddRoles)
+router.get('/roles', verifyToken, isAdmin, handleGetRoles)
+router.post('/roles', verifyToken, isAdmin, addRoleValidator, handleAddRoles)
 
 /* roles routes end */
 

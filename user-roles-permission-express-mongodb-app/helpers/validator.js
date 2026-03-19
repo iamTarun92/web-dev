@@ -15,7 +15,15 @@ const loginValidator = [
   check('password', 'Password is required.').not().isEmpty(),
 ]
 
+const addUserValidator = [
+  check('name', 'Name is required.').not().isEmpty(),
+  check('email', 'Please include a valid email.').isEmail().normalizeEmail({
+    gmail_remove_dots: true,
+  }),
+]
+
 module.exports = {
   registerValidator,
   loginValidator,
+  addUserValidator,
 }

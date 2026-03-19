@@ -28,21 +28,23 @@ const handleUserRegister = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const newUser = new User({
+    const userObj = {
       name,
       email,
       password: hashedPassword,
+    }
+
+    if (req.body.role) {
+      userObj.role = req.body.role
+    }
+
+    const userData = await User.create(userObj)
+
+    return res.status(201).json({
+      success: true,
+      message: 'Registered Successfully!',
+      data: userData,
     })
-
-    const userData = await newUser.save()
-
-    return res
-      .status(201)
-      .json({
-        success: true,
-        message: 'Registered Successfully!',
-        data: userData,
-      })
   } catch (error) {
     return res.status(400).json({
       success: false,
