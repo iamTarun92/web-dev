@@ -16,6 +16,7 @@ const handleGetRoles = async (req, res) => {
     })
   }
 }
+
 const handleAddRoles = async (req, res) => {
   try {
     const errors = validationResult(req)

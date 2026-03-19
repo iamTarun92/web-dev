@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const randomstring = require('randomstring')
 const { validationResult } = require('express-validator')
 const User = require('../models/userModel')
+const { sendEmail } = require('../helpers/mailer')
 
 const handleAddUser = async (req, res) => {
   try {
@@ -28,7 +29,6 @@ const handleAddUser = async (req, res) => {
 
     const password = randomstring.generate(6)
     const hashedPassword = await bcrypt.hash(password, 10)
-    console.log('password', password)
 
     const userObj = {
       name,
@@ -46,6 +46,12 @@ const handleAddUser = async (req, res) => {
     }
 
     const userData = await User.create(userObj)
+
+    await sendEmail({
+      to: userData.email,
+      subject: 'account created',
+      html: `<h3>Name: ${userData.name}</h3><h3>Email: ${userData.email}</h3><h3>Password: ${password}</h3>`,
+    })
 
     return res.status(201).json({
       success: true,
