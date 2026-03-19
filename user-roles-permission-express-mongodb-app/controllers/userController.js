@@ -66,6 +66,71 @@ const handleAddUser = async (req, res) => {
   }
 }
 
+const handleGetUsers = async (req, res) => {
+  try {
+    const allUsers = await User.find({ _id: { $ne: req.user._id } })
+    return res.status(200).json({
+      success: true,
+      message: 'Users data fetched Successfully!',
+      data: allUsers,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
+const handleUpdateUser = async (req, res) => {
+  try {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation errors',
+        errors: errors.array(),
+      })
+    }
+
+    const { id, name } = req.body
+
+    const isExists = await User.findOne({ _id: id })
+
+    if (!isExists) {
+      return res.status(400).json({
+        success: false,
+        message: 'User not Exist!',
+      })
+    }
+
+    const updateObj = {
+      name,
+    }
+
+    if (req.body.role != undefined) updateObj.role = req.body.role
+
+    const userData = await User.findByIdAndUpdate(
+      { _id: id },
+      { $set: updateObj },
+      { new: true },
+    )
+
+    return res.status(201).json({
+      success: true,
+      message: 'User updated Successfully!',
+      data: userData,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
+
 module.exports = {
   handleAddUser,
+  handleGetUsers,
+  handleUpdateUser,
 }

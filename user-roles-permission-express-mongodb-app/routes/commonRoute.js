@@ -20,14 +20,21 @@ const {
   handleUpdatePost,
   handleDeletePost,
 } = require('../controllers/postController')
-const { addUserValidator } = require('../helpers/validator')
-const { handleAddUser } = require('../controllers/userController')
+const {
+  addUserValidator,
+  updateUserValidator,
+} = require('../helpers/validator')
+const {
+  handleGetUsers,
+  handleAddUser,
+  handleUpdateUser,
+} = require('../controllers/userController')
 
 const router = express.Router()
 
 /* Category routes start */
-router.post('/categories', verifyToken, addCategoryValidator, handleAddCategory)
 router.get('/categories', verifyToken, handleGetCategory)
+router.post('/categories', verifyToken, addCategoryValidator, handleAddCategory)
 router.post(
   '/update-categories',
   verifyToken,
@@ -50,7 +57,9 @@ router.post('/delete-posts', verifyToken, deletePostValidator, handleDeletePost)
 /* Post route end */
 
 /* user routes start */
+router.get('/users', verifyToken, handleGetUsers)
 router.post('/users', verifyToken, addUserValidator, handleAddUser)
+router.post('/update-users', verifyToken, updateUserValidator, handleUpdateUser)
 /* user routes end */
 
 module.exports = router
