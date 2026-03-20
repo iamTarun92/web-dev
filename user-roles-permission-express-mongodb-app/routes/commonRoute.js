@@ -24,7 +24,8 @@ const {
   addUserValidator,
   updateUserValidator,
   deleteUserValidator,
-  addLikeValidator,
+  addPostLikeValidator,
+  countPostLikeValidator,
 } = require('../helpers/validator')
 const {
   handleGetUsers,
@@ -35,8 +36,7 @@ const {
 const {
   handleAddLike,
   handleGetLikes,
-  handleUpdateLike,
-  handleDeleteLike,
+  handleCountLikes,
 } = require('../controllers/likeController')
 
 const router = express.Router()
@@ -73,10 +73,13 @@ router.post('/delete-users', verifyToken, deleteUserValidator, handleDeleteUser)
 /* user routes end */
 
 /* likes routes start */
-router.get('/likes', verifyToken, handleGetLikes)
-router.post('/likes', verifyToken, addLikeValidator, handleAddLike)
-router.post('/update-likes', verifyToken, addLikeValidator, handleUpdateLike)
-router.post('/delete-likes', verifyToken, addLikeValidator, handleDeleteLike)
+router.post('/post-likes', verifyToken, addPostLikeValidator, handleAddLike)
+router.get(
+  '/count-post-likes',
+  verifyToken,
+  countPostLikeValidator,
+  handleCountLikes,
+)
 /* likes routes end */
 
 module.exports = router
