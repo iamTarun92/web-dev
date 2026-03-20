@@ -1,6 +1,22 @@
 const { validationResult } = require('express-validator')
 const Permission = require('../../models/permissionModel')
 
+const handleGetPermissions = async (req, res) => {
+  try {
+    const permissionsData = await Permission.find({})
+    return res.status(200).json({
+      success: true,
+      message: 'Permissions fetched successfully!',
+      data: permissionsData,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
+
 const handleAddPermission = async (req, res) => {
   try {
     const errors = validationResult(req)
@@ -43,22 +59,6 @@ const handleAddPermission = async (req, res) => {
       success: true,
       message: 'Permission added Successfully!',
       data: permissionData,
-    })
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      error: error.message,
-    })
-  }
-}
-
-const handleGetPermissions = async (req, res) => {
-  try {
-    const permissionsData = await Permission.find({})
-    return res.status(200).json({
-      success: true,
-      message: 'Permissions fetched successfully!',
-      data: permissionsData,
     })
   } catch (error) {
     return res.status(400).json({

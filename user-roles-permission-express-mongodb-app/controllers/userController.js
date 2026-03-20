@@ -4,6 +4,22 @@ const { validationResult } = require('express-validator')
 const User = require('../models/userModel')
 const { sendEmail } = require('../helpers/mailer')
 
+const handleGetUsers = async (req, res) => {
+  try {
+    const allUsers = await User.find({ _id: { $ne: req.user._id } })
+    return res.status(200).json({
+      success: true,
+      message: 'Users data fetched Successfully!',
+      data: allUsers,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
+
 const handleAddUser = async (req, res) => {
   try {
     const errors = validationResult(req)
@@ -62,22 +78,6 @@ const handleAddUser = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: error.message,
-    })
-  }
-}
-
-const handleGetUsers = async (req, res) => {
-  try {
-    const allUsers = await User.find({ _id: { $ne: req.user._id } })
-    return res.status(200).json({
-      success: true,
-      message: 'Users data fetched Successfully!',
-      data: allUsers,
-    })
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      error: error.message,
     })
   }
 }

@@ -1,6 +1,22 @@
 const { validationResult } = require('express-validator')
 const Category = require('../models/categoryModel')
 
+const handleGetCategory = async (req, res) => {
+  try {
+    const categoryData = await Category.find({})
+    return res.status(200).json({
+      success: true,
+      message: 'Category fetched successfully!',
+      data: categoryData,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
+
 const handleAddCategory = async (req, res) => {
   try {
     const errors = validationResult(req)
@@ -44,22 +60,6 @@ const handleAddCategory = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message,
-    })
-  }
-}
-
-const handleGetCategory = async (req, res) => {
-  try {
-    const categoryData = await Category.find({})
-    return res.status(200).json({
-      success: true,
-      message: 'Category fetched successfully!',
-      data: categoryData,
-    })
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      error: error.message,
     })
   }
 }

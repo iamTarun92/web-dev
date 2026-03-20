@@ -1,6 +1,22 @@
 const { validationResult } = require('express-validator')
 const Post = require('../models/postModel')
 
+const handleGetPost = async (req, res) => {
+  try {
+    const postData = await Post.find({}).populate('categories')
+    return res.status(200).json({
+      success: true,
+      message: 'Post fetched successfully!',
+      data: postData,
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    })
+  }
+}
+
 const handleAddPost = async (req, res) => {
   try {
     const errors = validationResult(req)
@@ -24,7 +40,7 @@ const handleAddPost = async (req, res) => {
       obj.categories = req.body.categories
     }
 
-    const newPost = await Post.create(obj).id
+    const newPost = await Post.create(obj)
 
     const postData = await Post.findOne({ _id: newPost._id }).populate(
       'categories',
@@ -39,22 +55,6 @@ const handleAddPost = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message,
-    })
-  }
-}
-
-const handleGetPost = async (req, res) => {
-  try {
-    const postData = await Post.find({}).populate('categories')
-    return res.status(200).json({
-      success: true,
-      message: 'Post fetched successfully!',
-      data: postData,
-    })
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      error: error.message,
     })
   }
 }
@@ -95,7 +95,7 @@ const handleUpdatePost = async (req, res) => {
       { _id: id },
       { $set: obj },
       { new: true },
-    )
+    ).populate('categories')
 
     return res.status(201).json({
       success: true,
