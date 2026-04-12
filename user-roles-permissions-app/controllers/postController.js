@@ -1,13 +1,13 @@
 const { validationResult } = require('express-validator')
-const Post = require('../models/postModel')
+const { Post } = require('../models/postModel')
 
 const handleGetPost = async (req, res) => {
   try {
-    const postData = await Post.find({}).populate('categories')
+    const posts = await Post.find({}).populate('categories')
     return res.status(200).json({
       success: true,
       message: 'Post fetched successfully!',
-      data: postData,
+      data: posts,
     })
   } catch (error) {
     return res.status(400).json({
@@ -76,24 +76,24 @@ const handleUpdatePost = async (req, res) => {
     const isExists = await Post.findOne({ _id: id })
 
     if (!isExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: 'Post not Exist!',
       })
     }
 
-    let obj = {
+    let payload = {
       title,
       description,
     }
 
     if (req.body.categories) {
-      obj.categories = req.body.categories
+      payload.categories = req.body.categories
     }
 
     const postData = await Post.findByIdAndUpdate(
       { _id: id },
-      { $set: obj },
+      { $set: payload },
       { new: true },
     ).populate('categories')
 
@@ -127,7 +127,7 @@ const handleDeletePost = async (req, res) => {
     const isExists = await Post.findOne({ _id: id })
 
     if (!isExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: 'Post not Exist!',
       })

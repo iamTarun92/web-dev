@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
-const User = require('../models/userModel')
+const { User } = require('../models/userModel')
 
 const handleUserRegister = async (req, res) => {
   try {
@@ -17,10 +17,10 @@ const handleUserRegister = async (req, res) => {
 
     const { name, email, password } = req.body
 
-    const isExistUser = await User.findOne({ email })
+    const isExists = await User.findOne({ email })
 
-    if (isExistUser) {
-      return res.status(401).json({
+    if (isExists) {
+      return res.status(409).json({
         success: false,
         message: 'Email already Exists!',
       })
@@ -28,17 +28,17 @@ const handleUserRegister = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const userObj = {
+    const payload = {
       name,
       email,
       password: hashedPassword,
     }
 
     if (req.body.role) {
-      userObj.role = req.body.role
+      payload.role = req.body.role
     }
 
-    const userData = await User.create(userObj)
+    const userData = await User.create(payload)
 
     return res.status(201).json({
       success: true,
@@ -81,31 +81,24 @@ const handelUserLogin = async (req, res) => {
 
     const { email, password } = req.body
 
-    const userData = await User.findOne({ email: email })
+    const user = await User.findOne({ email })
+    const passwordMatch = await bcrypt.compare(password, user.password)
 
-    if (!userData) {
+    if (!user || !passwordMatch) {
       return res
         .status(400)
         .json({ success: false, message: 'Email and Password is Incorrect!' })
     }
 
-    const passwordMatch = await bcrypt.compare(password, userData.password)
-
-    if (!passwordMatch) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Email and Password is Incorrect!' })
-    }
-
-    const accessToken = await handelGenerateAccessToken({ user: userData })
-    const refreshToken = await handelGenerateRefreshToken({ user: userData })
+    const accessToken = await handelGenerateAccessToken({ user })
+    const refreshToken = await handelGenerateRefreshToken({ user })
 
     return res.status(201).json({
       success: true,
       message: 'Login Successfully!',
-      data: userData,
-      accessToken: accessToken,
-      refreshToken: refreshToken,
+      data: user,
+      accessToken,
+      refreshToken,
       tokenType: 'Bearer',
     })
   } catch (error) {
@@ -119,11 +112,11 @@ const handelUserLogin = async (req, res) => {
 const handelGetProfile = async (req, res) => {
   try {
     const _id = req.user._id
-    const userdata = await User.findOne({ _id })
+    const user = await User.findOne({ _id })
     return res.status(200).json({
       success: true,
       message: 'Profile data loaded!',
-      data: userdata,
+      data: user,
     })
   } catch (error) {
     return res.status(400).json({

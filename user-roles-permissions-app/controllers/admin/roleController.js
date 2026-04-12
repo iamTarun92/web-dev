@@ -3,11 +3,11 @@ const { Role } = require('../../models/roleModel')
 
 const handleGetRoles = async (req, res) => {
   try {
-    const roleData = await Role.find({ role_value: { $ne: 1 } })
+    const rolesData = await Role.find({ type: { $ne: 1 } })
     return res.status(200).json({
       success: true,
       message: 'Role fetched successfully!',
-      data: roleData,
+      data: rolesData,
     })
   } catch (error) {
     return res.status(400).json({
@@ -29,11 +29,28 @@ const handleAddRoles = async (req, res) => {
       })
     }
 
-    const { role_name, role_value } = req.body
-    const roleData = await Role.create({
-      role_name,
-      role_value,
+    const { name, type } = req.body
+
+    // prevent duplicate entry
+    const isExists = await Role.findOne({
+      name: {
+        $regex: name.trim(),
+        $options: 'i',
+      },
     })
+
+    if (isExists) {
+      return res.status(409).json({
+        success: false,
+        message: 'Role name already Exist!',
+      })
+    }
+
+    const roleData = await Role.create({
+      name,
+      type,
+    })
+
     return res.status(201).json({
       success: true,
       message: 'Role added Successfully!',

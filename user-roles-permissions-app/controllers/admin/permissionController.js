@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator')
-const Permission = require('../../models/permissionModel')
+const { Permission } = require('../../models/permissionModel')
 
 const handleGetPermissions = async (req, res) => {
   try {
@@ -31,9 +31,10 @@ const handleAddPermission = async (req, res) => {
 
     const { permission_name } = req.body
 
+    // prevent duplicate entry
     const isExists = await Permission.findOne({
       permission_name: {
-        $regex: permission_name,
+        $regex: permission_name.trim(),
         $options: 'i',
       },
     })
@@ -85,7 +86,7 @@ const handleUpdatePermission = async (req, res) => {
     const isExists = await Permission.findOne({ _id: id })
 
     if (!isExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: 'Permission not Exist!',
       })
@@ -110,7 +111,7 @@ const handleUpdatePermission = async (req, res) => {
       permission_name,
     }
 
-    if (req.body.is_default !== null) {
+    if (req.body.is_default && req.body.is_default !== null) {
       payload.is_default = parseInt(req.body.is_default)
     }
 
@@ -150,7 +151,7 @@ const handleDeletePermission = async (req, res) => {
     const isExists = await Permission.findOne({ _id: id })
 
     if (!isExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: 'Permission not Exist!',
       })

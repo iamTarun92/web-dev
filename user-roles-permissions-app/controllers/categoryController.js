@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator')
-const Category = require('../models/categoryModel')
+const { Category } = require('../models/categoryModel')
 
 const handleGetCategory = async (req, res) => {
   try {
@@ -31,11 +31,10 @@ const handleAddCategory = async (req, res) => {
 
     let { category_name } = req.body
 
-    category_name = category_name.trim()
-
+    // prevent duplicate entry
     const isExists = await Category.findOne({
       name: {
-        $regex: category_name,
+        $regex: category_name.trim(),
         $options: 'i',
       },
     })
@@ -81,7 +80,7 @@ const handleUpdateCategory = async (req, res) => {
     const isExists = await Category.findOne({ _id: id })
 
     if (!isExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: 'Category not Exist!',
       })
@@ -102,9 +101,13 @@ const handleUpdateCategory = async (req, res) => {
       })
     }
 
+    const payload = {
+      name: category_name,
+    }
+
     const categoryData = await Category.findByIdAndUpdate(
       { _id: id },
-      { $set: { name: category_name } },
+      { $set: payload },
       { new: true },
     )
 
@@ -138,7 +141,7 @@ const handleDeleteCategory = async (req, res) => {
     const isExists = await Category.findOne({ _id: id })
 
     if (!isExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: 'Category not Exist!',
       })

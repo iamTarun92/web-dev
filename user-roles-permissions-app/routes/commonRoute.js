@@ -1,4 +1,5 @@
 const express = require('express')
+const router = express.Router()
 const { verifyToken } = require('../middleware/authMiddleware')
 const {
   addCategoryValidator,
@@ -8,6 +9,13 @@ const {
   updatePostValidator,
   deletePostValidator,
 } = require('../helpers/adminValidator')
+const {
+  addUserValidator,
+  updateUserValidator,
+  deleteUserValidator,
+  addPostLikeValidator,
+  countPostLikeValidator,
+} = require('../helpers/validator')
 const {
   handleAddCategory,
   handleGetCategory,
@@ -21,13 +29,6 @@ const {
   handleDeletePost,
 } = require('../controllers/postController')
 const {
-  addUserValidator,
-  updateUserValidator,
-  deleteUserValidator,
-  addPostLikeValidator,
-  countPostLikeValidator,
-} = require('../helpers/validator')
-const {
   handleGetUsers,
   handleAddUser,
   handleUpdateUser,
@@ -35,51 +36,33 @@ const {
 } = require('../controllers/userController')
 const {
   handleAddLike,
-  handleGetLikes,
   handleCountLikes,
 } = require('../controllers/likeController')
 
-const router = express.Router()
+router.use(verifyToken)
 
-/* Category routes start */
-router.get('/categories', verifyToken, handleGetCategory)
-router.post('/categories', verifyToken, addCategoryValidator, handleAddCategory)
-router.post(
-  '/update-categories',
-  verifyToken,
-  updateCategoryValidator,
-  handleUpdateCategory,
-)
-router.post(
-  '/delete-categories',
-  verifyToken,
-  deleteCategoryValidator,
-  handleDeleteCategory,
-)
-/* Category routes end */
+router
+  .route('/categories')
+  .get(handleGetCategory)
+  .post(addCategoryValidator, handleAddCategory)
+  .put(updateCategoryValidator, handleUpdateCategory)
+  .delete(deleteCategoryValidator, handleDeleteCategory)
 
-/* Post route start */
-router.get('/posts', verifyToken, handleGetPost)
-router.post('/posts', verifyToken, addPostValidator, handleAddPost)
-router.post('/update-posts', verifyToken, updatePostValidator, handleUpdatePost)
-router.post('/delete-posts', verifyToken, deletePostValidator, handleDeletePost)
-/* Post route end */
+router
+  .route('/posts')
+  .get(handleGetPost)
+  .post(addPostValidator, handleAddPost)
+  .put(updatePostValidator, handleUpdatePost)
+  .delete(deletePostValidator, handleDeletePost)
 
-/* user routes start */
-router.get('/users', verifyToken, handleGetUsers)
-router.post('/users', verifyToken, addUserValidator, handleAddUser)
-router.post('/update-users', verifyToken, updateUserValidator, handleUpdateUser)
-router.post('/delete-users', verifyToken, deleteUserValidator, handleDeleteUser)
-/* user routes end */
+router
+  .route('/users')
+  .get(handleGetUsers)
+  .post(addUserValidator, handleAddUser)
+  .put(updateUserValidator, handleUpdateUser)
+  .delete(deleteUserValidator, handleDeleteUser)
 
-/* likes routes start */
-router.post('/post-likes', verifyToken, addPostLikeValidator, handleAddLike)
-router.get(
-  '/count-post-likes',
-  verifyToken,
-  countPostLikeValidator,
-  handleCountLikes,
-)
-/* likes routes end */
+router.post('/likes', addPostLikeValidator, handleAddLike)
+router.get('/likes/count', countPostLikeValidator, handleCountLikes)
 
 module.exports = router

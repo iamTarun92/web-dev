@@ -12,7 +12,6 @@ const UserPermissionSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-
       permission_value: [
         {
           type: String,
@@ -25,4 +24,4 @@ const UserPermissionSchema = new mongoose.Schema({
 
 const UserPermission = mongoose.model('UserPermission', UserPermissionSchema)
 
-module.exports = UserPermission
+module.exports = { UserPermission }

@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 const randomstring = require('randomstring')
 const { validationResult } = require('express-validator')
-const User = require('../models/userModel')
+const { User } = require('../models/userModel')
 const { sendEmail } = require('../helpers/mailer')
 
 const handleGetUsers = async (req, res) => {
@@ -37,7 +37,7 @@ const handleAddUser = async (req, res) => {
     const isExists = await User.findOne({ email })
 
     if (isExists) {
-      return res.status(401).json({
+      return res.status(409).json({
         success: false,
         message: 'Email already Exists!',
       })
@@ -99,7 +99,7 @@ const handleUpdateUser = async (req, res) => {
     const isExists = await User.findOne({ _id: id })
 
     if (!isExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: 'User not Exist!',
       })
@@ -147,7 +147,7 @@ const handleDeleteUser = async (req, res) => {
     const isExists = await User.findOne({ _id: id })
 
     if (!isExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: 'User not Exist!',
       })

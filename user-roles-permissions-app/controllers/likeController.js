@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator')
-const Like = require('../models/likeModel')
+const { Like } = require('../models/likeModel')
 
 const handleCountLikes = async (req, res) => {
   try {
@@ -19,7 +19,7 @@ const handleCountLikes = async (req, res) => {
     })
 
     if (!isExists) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: 'Post ID not Exist!',
       })

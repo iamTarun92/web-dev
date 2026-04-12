@@ -39,8 +39,8 @@ const updatePostValidator = [
 
 /* roles validator start*/
 const addRoleValidator = [
-  check('role_name', 'role_name is required.').not().isEmpty(),
-  check('role_value', 'role_value is required.').not().isEmpty(),
+  check('name', 'name is required.').not().isEmpty(),
+  check('type', 'type is required.').not().isEmpty(),
 ]
 /* roles validator end */
 
