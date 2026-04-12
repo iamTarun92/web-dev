@@ -46,7 +46,7 @@ const handleAddUser = async (req, res) => {
     const password = randomstring.generate(6)
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const userObj = {
+    const payload = {
       name,
       email,
       password: hashedPassword,
@@ -58,10 +58,10 @@ const handleAddUser = async (req, res) => {
         message: 'You can not create Admin!',
       })
     } else if (req.body.role) {
-      userObj.role = req.body.role
+      payload.role = req.body.role
     }
 
-    const userData = await User.create(userObj)
+    const userData = await User.create(payload)
 
     await sendEmail({
       to: userData.email,

@@ -2,6 +2,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const { User } = require('../models/userModel')
+const { Permission } = require('../models/permissionModel')
+const { UserPermission } = require('../models/userPermissionModel')
 
 const handleUserRegister = async (req, res) => {
   try {
@@ -38,7 +40,23 @@ const handleUserRegister = async (req, res) => {
       payload.role = req.body.role
     }
 
+    // Create User collection
     const userData = await User.create(payload)
+
+    // Fetch default permissions
+    const defaultPermissions = await Permission.find({ is_default: 1 })
+
+    if (defaultPermissions.length) {
+      const userPermissionsData = defaultPermissions.map((perm) => ({
+        permission_name: perm.permission_name,
+        permission_value: [0, 1, 2, 3],
+      }))
+
+      await UserPermission.create({
+        user_id: userData._id,
+        permissions: userPermissionsData,
+      })
+    }
 
     return res.status(201).json({
       success: true,
