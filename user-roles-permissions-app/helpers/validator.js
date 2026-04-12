@@ -15,6 +15,30 @@ const loginValidator = [
   check('password', 'password is required.').not().isEmpty(),
 ]
 
+/* categories validator start */
+const addCategoryValidator = [
+  check('category_name', 'category_name is required.').not().isEmpty(),
+]
+const deleteCategoryValidator = [check('id', 'id is required.').not().isEmpty()]
+const updateCategoryValidator = [
+  check('id', 'id is required.').not().isEmpty(),
+  check('category_name', 'category_name is required.').not().isEmpty(),
+]
+/* categories validator end */
+
+/* posts validator start */
+const addPostValidator = [
+  check('title', 'title is required.').not().isEmpty(),
+  check('description', 'description is required.').not().isEmpty(),
+]
+const deletePostValidator = [check('id', 'id is required.').not().isEmpty()]
+const updatePostValidator = [
+  check('id', 'id is required.').not().isEmpty(),
+  check('title', 'title is required.').not().isEmpty(),
+  check('description', 'description is required.').not().isEmpty(),
+]
+/* posts validator end */
+
 const addUserValidator = [
   check('name', 'name is required.').not().isEmpty(),
   check('email', 'Please include a valid email.').isEmail().normalizeEmail({
@@ -41,6 +65,12 @@ const countPostLikeValidator = [
 module.exports = {
   registerValidator,
   loginValidator,
+  addCategoryValidator,
+  updateCategoryValidator,
+  deleteCategoryValidator,
+  addPostValidator,
+  deletePostValidator,
+  updatePostValidator,
   addUserValidator,
   updateUserValidator,
   deleteUserValidator,

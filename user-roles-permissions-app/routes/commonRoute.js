@@ -6,10 +6,8 @@ const {
   updateCategoryValidator,
   deleteCategoryValidator,
   addPostValidator,
-  updatePostValidator,
   deletePostValidator,
-} = require('../helpers/adminValidator')
-const {
+  updatePostValidator,
   addUserValidator,
   updateUserValidator,
   deleteUserValidator,
