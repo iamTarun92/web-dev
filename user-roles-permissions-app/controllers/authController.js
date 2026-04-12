@@ -85,6 +85,40 @@ const handelGenerateRefreshToken = async (user) => {
   return token
 }
 
+const getUserWithPermissions = async (email) => {
+  const result = await User.aggregate([
+    {
+      $match: { email: email },
+    },
+    {
+      $lookup: {
+        from: 'userpermissions',
+        localField: '_id',
+        foreignField: 'user_id',
+        as: 'permissionsData',
+      },
+    },
+    {
+      $unwind: {
+        path: '$permissionsData',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        email: 1,
+        role: 1,
+        permissions: {
+          $ifNull: ['$permissionsData.permissions', []],
+        },
+      },
+    },
+  ])
+
+  return result[0] || null
+}
+
 const handelUserLogin = async (req, res) => {
   try {
     const errors = validationResult(req)
@@ -108,13 +142,14 @@ const handelUserLogin = async (req, res) => {
         .json({ success: false, message: 'Email and Password is Incorrect!' })
     }
 
+    const userWithPermissions = await getUserWithPermissions(email)
     const accessToken = await handelGenerateAccessToken({ user })
     const refreshToken = await handelGenerateRefreshToken({ user })
 
     return res.status(201).json({
       success: true,
       message: 'Login Successfully!',
-      data: user,
+      data: userWithPermissions,
       accessToken,
       refreshToken,
       tokenType: 'Bearer',
