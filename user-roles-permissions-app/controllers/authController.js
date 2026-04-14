@@ -5,10 +5,26 @@ const { User } = require('../models/userModel')
 const { Permission } = require('../models/permissionModel')
 const { UserPermission } = require('../models/userPermissionModel')
 
+const assignDefaultPermissions = async (userData) => {
+  const defaultPermissions = await Permission.find({ is_default: 1 })
+
+  if (defaultPermissions.length) {
+    const userPermissionsData = defaultPermissions.map((perm) => ({
+      permission_name: perm.permission_name,
+      permission_value: [0, 1, 2, 3],
+    }))
+
+    await UserPermission.create({
+      user_id: userData._id,
+      permissions: userPermissionsData,
+    })
+  }
+}
+
 const handleUserRegister = async (req, res) => {
   try {
+    // Step 1: Validate request
     const errors = validationResult(req)
-
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
@@ -17,10 +33,11 @@ const handleUserRegister = async (req, res) => {
       })
     }
 
+    // Step 2: Extract user data
     const { name, email, password } = req.body
 
+    // Step 3: Check if user already exists
     const isExists = await User.findOne({ email })
-
     if (isExists) {
       return res.status(409).json({
         success: false,
@@ -28,35 +45,20 @@ const handleUserRegister = async (req, res) => {
       })
     }
 
+    // Step 4: Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const payload = {
-      name,
-      email,
-      password: hashedPassword,
-    }
-
+    // Step 5: Prepare payload
+    const payload = { name, email, password: hashedPassword }
     if (req.body.role) {
       payload.role = req.body.role
     }
 
-    // Create User collection
+    // Step 6: Create user
     const userData = await User.create(payload)
 
-    // Fetch default permissions
-    const defaultPermissions = await Permission.find({ is_default: 1 })
-
-    if (defaultPermissions.length) {
-      const userPermissionsData = defaultPermissions.map((perm) => ({
-        permission_name: perm.permission_name,
-        permission_value: [0, 1, 2, 3],
-      }))
-
-      await UserPermission.create({
-        user_id: userData._id,
-        permissions: userPermissionsData,
-      })
-    }
+    // Pass userData to next step
+    await assignDefaultPermissions(userData)
 
     return res.status(201).json({
       success: true,
@@ -73,19 +75,19 @@ const handleUserRegister = async (req, res) => {
 
 const handelGenerateAccessToken = async (user) => {
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '2h',
+    expiresIn: '4h',
   })
   return token
 }
 
 const handelGenerateRefreshToken = async (user) => {
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '4h',
+    expiresIn: '10h',
   })
   return token
 }
 
-const getUserWithPermissions = async (email) => {
+const getUserPermissions = async (email) => {
   const result = await User.aggregate([
     {
       $match: { email: email },
@@ -110,7 +112,7 @@ const getUserWithPermissions = async (email) => {
         email: 1,
         role: 1,
         permissions: {
-          $ifNull: ['$permissionsData.permissions', []],
+          $ifNull: ['$permissionsData.permissions', null],
         },
       },
     },
@@ -142,7 +144,7 @@ const handelUserLogin = async (req, res) => {
         .json({ success: false, message: 'Email and Password is Incorrect!' })
     }
 
-    const userWithPermissions = await getUserWithPermissions(email)
+    const userWithPermissions = await getUserPermissions(email)
     const accessToken = await handelGenerateAccessToken({ user })
     const refreshToken = await handelGenerateRefreshToken({ user })
 

@@ -3,10 +3,47 @@ const randomstring = require('randomstring')
 const { validationResult } = require('express-validator')
 const { User } = require('../models/userModel')
 const { sendEmail } = require('../helpers/mailer')
+const mongoose = require('mongoose')
+const { Permission } = require('../models/permissionModel')
+const { UserPermission } = require('../models/userPermissionModel')
+
+const getUserPermissions = async (currentUserId) => {
+  const result = await User.aggregate([
+    {
+      $match: { _id: { $ne: new mongoose.Types.ObjectId(currentUserId) } },
+    },
+    {
+      $lookup: {
+        from: 'userpermissions',
+        localField: '_id',
+        foreignField: 'user_id',
+        as: 'permissionsData',
+      },
+    },
+    {
+      $unwind: {
+        path: '$permissionsData',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        email: 1,
+        role: 1,
+        permissions: {
+          $ifNull: ['$permissionsData.permissions', null],
+        },
+      },
+    },
+  ])
+
+  return result || null
+}
 
 const handleGetUsers = async (req, res) => {
   try {
-    const allUsers = await User.find({ _id: { $ne: req.user._id } })
+    const allUsers = await getUserPermissions(req.user._id)
     return res.status(200).json({
       success: true,
       message: 'Users data fetched Successfully!',
@@ -17,6 +54,34 @@ const handleGetUsers = async (req, res) => {
       success: false,
       error: error.message,
     })
+  }
+}
+
+const assignUserPermissions = async (currentUser, userPermissions) => {
+  try {
+    // Step 1: Extract ids
+    const ids = userPermissions.map((p) => p._id)
+
+    // Step 2: Query DB for matching permissions
+    const dbPermissions = await Permission.find({ _id: { $in: ids } })
+
+    // Step 3: Merge results
+    const mergedPermissions = userPermissions.map((userPerm) => {
+      const dbPerm = dbPermissions.find(
+        (perm) => perm._id.toString() === userPerm._id,
+      )
+      return {
+        permission_value: userPerm.permission_value,
+        permission_name: dbPerm ? dbPerm.permission_name : null, // fallback if not found
+      }
+    })
+
+    await UserPermission.create({
+      user_id: currentUser._id,
+      permissions: mergedPermissions,
+    })
+  } catch (error) {
+    console.error('Error merging permissions:', error)
   }
 }
 
@@ -62,6 +127,10 @@ const handleAddUser = async (req, res) => {
     }
 
     const userData = await User.create(payload)
+
+    if (req.body.permissions.length) {
+      await assignUserPermissions(userData, req.body.permissions)
+    }
 
     await sendEmail({
       to: userData.email,
