@@ -57,7 +57,11 @@ const handleGetUsers = async (req, res) => {
   }
 }
 
-const assignUserPermissions = async (currentUser, userPermissions) => {
+const assignUserPermissions = async (
+  currentUser,
+  userPermissions,
+  isUpdate = false,
+) => {
   try {
     // Step 1: Extract ids
     const ids = userPermissions.map((p) => p._id)
@@ -66,7 +70,7 @@ const assignUserPermissions = async (currentUser, userPermissions) => {
     const dbPermissions = await Permission.find({ _id: { $in: ids } })
 
     // Step 3: Merge results
-    const mergedPermissions = userPermissions.map((userPerm) => {
+    const userPermissionsData = userPermissions.map((userPerm) => {
       const dbPerm = dbPermissions.find(
         (perm) => perm._id.toString() === userPerm._id,
       )
@@ -76,10 +80,25 @@ const assignUserPermissions = async (currentUser, userPermissions) => {
       }
     })
 
-    await UserPermission.create({
-      user_id: currentUser._id,
-      permissions: mergedPermissions,
-    })
+    if (!isUpdate) {
+      await UserPermission.create({
+        user_id: currentUser._id,
+        permissions: userPermissionsData,
+      })
+    } else {
+      await UserPermission.findOneAndUpdate(
+        { user_id: currentUser._id }, // condition
+        {
+          $set: {
+            permissions: userPermissionsData,
+          },
+        },
+        {
+          new: true, // return updated document
+          upsert: true, // create if not exists
+        },
+      )
+    }
   } catch (error) {
     console.error('Error merging permissions:', error)
   }
@@ -128,7 +147,7 @@ const handleAddUser = async (req, res) => {
 
     const userData = await User.create(payload)
 
-    if (req.body.permissions.length) {
+    if (req.body.permissions && req.body.permissions.length) {
       await assignUserPermissions(userData, req.body.permissions)
     }
 
@@ -174,17 +193,28 @@ const handleUpdateUser = async (req, res) => {
       })
     }
 
-    const updateObj = {
+    const payload = {
       name,
     }
 
-    if (req.body.role != undefined) updateObj.role = req.body.role
+    if (req.body.role && req.body.role == 1) {
+      return res.status(401).json({
+        success: false,
+        message: 'You can not create Admin!',
+      })
+    } else if (req.body.role) {
+      payload.role = req.body.role
+    }
 
     const userData = await User.findByIdAndUpdate(
       { _id: id },
-      { $set: updateObj },
+      { $set: payload },
       { new: true },
     )
+
+    if (req.body.permissions && req.body.permissions.length) {
+      await assignUserPermissions(userData, req.body.permissions)
+    }
 
     return res.status(201).json({
       success: true,
