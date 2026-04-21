@@ -10,9 +10,10 @@ const handleGetPost = async (req, res) => {
       data: posts,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
@@ -52,9 +53,10 @@ const handleAddPost = async (req, res) => {
       data: postData,
     })
   } catch (error) {
+    console.error(`Error: ${error.message}`)
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
@@ -103,9 +105,10 @@ const handleUpdatePost = async (req, res) => {
       data: postData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
@@ -141,9 +144,10 @@ const handleDeletePost = async (req, res) => {
       data: postData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }

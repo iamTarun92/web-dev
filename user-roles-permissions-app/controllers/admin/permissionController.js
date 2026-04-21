@@ -10,9 +10,10 @@ const handleGetPermissions = async (req, res) => {
       data: permissionsData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
@@ -29,12 +30,11 @@ const handleAddPermission = async (req, res) => {
       })
     }
 
-    const { permission_name } = req.body
+    const { permission_name, is_default } = req.body
 
-    // prevent duplicate entry
     const isExists = await Permission.findOne({
       permission_name: {
-        $regex: permission_name.trim(),
+        $regex: `^${permission_name.trim()}$`, // Added anchors ^ and $ for exact match
         $options: 'i',
       },
     })
@@ -42,29 +42,38 @@ const handleAddPermission = async (req, res) => {
     if (isExists) {
       return res.status(409).json({
         success: false,
-        message: 'Permission name already Exist!',
+        message: 'Permission Name already exists!',
       })
     }
 
-    const newPermission = {
-      permission_name,
+    const payload = { permission_name }
+
+    if (is_default !== undefined && is_default !== null) {
+      const parsedValue = Number(is_default)
+
+      if (isNaN(parsedValue)) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'Invalid type: is_default must be a number or numeric string.',
+        })
+      }
+
+      payload.is_default = parsedValue
     }
 
-    if (req.body.is_default) {
-      newPermission.is_default = parseInt(req.body.is_default)
-    }
-
-    const permissionData = await Permission.create(newPermission)
+    const permissionData = await Permission.create(payload)
 
     return res.status(201).json({
       success: true,
-      message: 'Permission added Successfully!',
+      message: 'Permission added successfully!',
       data: permissionData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
@@ -127,9 +136,10 @@ const handleUpdatePermission = async (req, res) => {
       data: permissionData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
@@ -165,9 +175,10 @@ const handleDeletePermission = async (req, res) => {
       data: permissionData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }

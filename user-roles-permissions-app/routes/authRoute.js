@@ -1,16 +1,19 @@
 const express = require('express')
 const {
   handleUserRegister,
-  handelUserLogin,
-  handelGetProfile,
+  handleUserLogin,
+  handleGetProfile,
 } = require('../controllers/authController')
-const { registerValidator, loginValidator } = require('../helpers/validator')
+const {
+  registerValidator,
+  loginValidator,
+} = require('../helpers/authValidator')
 const { verifyToken } = require('../middleware/authMiddleware')
 
 const router = express.Router()
 
 router.post('/register', registerValidator, handleUserRegister)
-router.post('/login', loginValidator, handelUserLogin)
-router.get('/profile', verifyToken, handelGetProfile)
+router.post('/login', loginValidator, handleUserLogin)
+router.get('/profile', verifyToken, handleGetProfile)
 
 module.exports = router

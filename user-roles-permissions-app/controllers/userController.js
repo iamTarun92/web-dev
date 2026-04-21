@@ -50,9 +50,10 @@ const handleGetUsers = async (req, res) => {
       data: allUsers,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
@@ -100,7 +101,11 @@ const assignUserPermissions = async (
       )
     }
   } catch (error) {
-    console.error('Error merging permissions:', error)
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+    })
   }
 }
 
@@ -163,9 +168,10 @@ const handleAddUser = async (req, res) => {
       data: userData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
@@ -222,9 +228,10 @@ const handleUpdateUser = async (req, res) => {
       data: userData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
@@ -260,9 +267,10 @@ const handleDeleteUser = async (req, res) => {
       data: userData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      message: 'Internal Server Error',
     })
   }
 }

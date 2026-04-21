@@ -13,7 +13,7 @@ const {
   deleteUserValidator,
   addPostLikeValidator,
   countPostLikeValidator,
-} = require('../helpers/validator')
+} = require('../helpers/commonValidator')
 const {
   handleAddCategory,
   handleGetCategory,
@@ -36,6 +36,7 @@ const {
   handleAddLike,
   handleCountLikes,
 } = require('../controllers/likeController')
+const { isAdmin } = require('../middleware/adminMiddleware')
 
 router.use(verifyToken)
 
@@ -55,10 +56,10 @@ router
 
 router
   .route('/users')
-  .get(handleGetUsers)
-  .post(addUserValidator, handleAddUser)
-  .put(updateUserValidator, handleUpdateUser)
-  .delete(deleteUserValidator, handleDeleteUser)
+  .get(isAdmin, handleGetUsers)
+  .post(isAdmin, addUserValidator, handleAddUser)
+  .put(isAdmin, updateUserValidator, handleUpdateUser)
+  .delete(isAdmin, deleteUserValidator, handleDeleteUser)
 
 router.post('/likes', addPostLikeValidator, handleAddLike)
 router.get('/likes/count', countPostLikeValidator, handleCountLikes)

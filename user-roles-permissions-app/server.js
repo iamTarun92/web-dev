@@ -15,8 +15,8 @@ configureMiddlewares(app)
 
 // Restful API routes
 app.use('/api', authRoute)
-app.use('/api', commonRoute)
 app.use('/api/admin', adminRoute)
+app.use('/api', commonRoute)
 
 // Handle 404 (Route not found)
 app.use((req, res, next) => {

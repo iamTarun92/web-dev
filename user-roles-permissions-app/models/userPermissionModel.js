@@ -15,7 +15,7 @@ const UserPermissionSchema = new mongoose.Schema({
       permission_value: [
         {
           type: Number,
-          enum: [0, 1, 2, 3], // 'CREATE', 'READ', 'UPDATE', 'DELETE'
+          enum: [0, 1, 2, 3], // 0->'CREATE', 1->'READ', 2->'UPDATE', 3->'DELETE'
         },
       ],
     },

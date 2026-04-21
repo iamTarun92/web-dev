@@ -38,6 +38,7 @@ const handleUserRegister = async (req, res) => {
 
     // Step 3: Check if user already exists
     const isExists = await User.findOne({ email })
+
     if (isExists) {
       return res.status(409).json({
         success: false,
@@ -66,23 +67,24 @@ const handleUserRegister = async (req, res) => {
       data: userData,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
 
-const handelGenerateAccessToken = async (user) => {
+const handleGenerateAccessToken = async (user) => {
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '4h',
+    expiresIn: '10h',
   })
   return token
 }
 
-const handelGenerateRefreshToken = async (user) => {
+const handleGenerateRefreshToken = async (user) => {
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '10h',
+    expiresIn: '24h',
   })
   return token
 }
@@ -121,7 +123,7 @@ const getUserPermissions = async (email) => {
   return result[0] || null
 }
 
-const handelUserLogin = async (req, res) => {
+const handleUserLogin = async (req, res) => {
   try {
     const errors = validationResult(req)
 
@@ -145,8 +147,8 @@ const handelUserLogin = async (req, res) => {
     }
 
     const userWithPermissions = await getUserPermissions(email)
-    const accessToken = await handelGenerateAccessToken({ user })
-    const refreshToken = await handelGenerateRefreshToken({ user })
+    const accessToken = await handleGenerateAccessToken({ user })
+    const refreshToken = await handleGenerateRefreshToken({ user })
 
     return res.status(201).json({
       success: true,
@@ -157,34 +159,44 @@ const handelUserLogin = async (req, res) => {
       tokenType: 'Bearer',
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
 
-const handelGetProfile = async (req, res) => {
+const handleGetProfile = async (req, res) => {
   try {
-    const _id = req.user._id
-    const user = await User.findOne({ _id })
+    const userId = req.user._id
+    const user = await User.findById(userId).select('-password -__v').lean()
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.',
+      })
+    }
+
     return res.status(200).json({
       success: true,
       message: 'Profile data loaded!',
       data: user,
     })
   } catch (error) {
-    return res.status(400).json({
+    console.error(`Error: ${error.message}`)
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: 'Internal Server Error',
     })
   }
 }
 
 module.exports = {
   handleUserRegister,
-  handelGenerateAccessToken,
-  handelGenerateRefreshToken,
-  handelUserLogin,
-  handelGetProfile,
+  handleGenerateAccessToken,
+  handleGenerateRefreshToken,
+  handleUserLogin,
+  handleGetProfile,
 }

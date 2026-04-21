@@ -28,10 +28,20 @@
 
 # Steps to run
 
-- npm i express mongoose bcrypt jsonwebtoken express-validator nodemon dotenv
+- npm i express mongoose bcrypt jsonwebtoken express-validator nodemon dotenv randomstring
 - Create all models
-- Create auth routes
-- login with jwt token
-- Create add permission API for admin
-- User profile API
-- Auth middleware
+- Create user register routes
+- Create user login routes using jwt
+- Create add permission routes
+- Add auth middleware
+- Create user profile route
+- CURD operations for permission API
+- Add isAdmin middleware for permission API
+- Category CURD operations
+- Post CURD operations
+- Roles CURD operations
+- Add users API functionality
+- Send email to user with details
+- User CURD
+- Post-like CURD
+- Assign Default Permissions on User Registration.
